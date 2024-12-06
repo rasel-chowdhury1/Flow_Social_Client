@@ -1,5 +1,6 @@
 import { user } from "@/components/assets/data";
 import ProfileCard from "./ProfileCard";
+import FriendsCard from "./FriendsCard";
 
 const UserData = user;
 
@@ -9,7 +10,7 @@ const Home: React.FC = () => {
           {/* LEFT */}
           <div className='hidden w-1/3 lg:w-1/4 h-full md:flex flex-col gap-6 overflow-y-auto'>
             <ProfileCard user={UserData} />
-            {/* <FriendsCard friends={user?.friends} /> */}
+            <FriendsCard friends={user?.friends} />
           </div>
 
           {/* CENTER */}
