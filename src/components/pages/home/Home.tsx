@@ -1,10 +1,30 @@
-import { user } from "@/components/assets/data";
+"use client"
+
+import { posts, user } from "@/components/assets/data";
 import ProfileCard from "./ProfileCard";
 import FriendsCard from "./FriendsCard";
+import { useState } from "react";
+import { NoProfile } from "@/components/assets";
+import TextInput from "@/components/ui/TextInput";
+import { useForm } from "react-hook-form";
+import { BiImages, BiSolidVideo } from "react-icons/bi";
+import { BsFiletypeGif } from "react-icons/bs";
+import CustomButton from "@/components/ui/CustomButton";
+const {
+  register,
+  handleSubmit,
+  formState: { errors },
+} = useForm();
+
 
 const UserData = user;
 
 const Home: React.FC = () => {
+  // const [suggestedFriends, setSuggestedFriends] = useState(suggest);
+  const [errMsg, setErrMsg] = useState("");
+  const [file, setFile] = useState(null);
+  const [posting, setPosting] = useState(false);
+  const [loading, setLoading] = useState(false);
     return (
         <div className='w-full flex gap-2 lg:gap-4 pt-5 pb-10 h-full'>
           {/* LEFT */}
@@ -14,9 +34,8 @@ const Home: React.FC = () => {
           </div>
 
           {/* CENTER */}
-          {/* <div className='flex-1 h-full px-4 flex flex-col gap-6 overflow-y-auto rounded-lg'>
+          <div className='flex-1 h-full px-4 flex flex-col gap-6 overflow-y-auto rounded-lg'>
             <form
-              onSubmit={handleSubmit(handlePostSubmit)}
               className='bg-primary px-4 rounded-lg'
             >
               <div className='w-full flex items-center gap-2 py-4 border-b border-[#66666645]'>
@@ -29,9 +48,6 @@ const Home: React.FC = () => {
                   styles='w-full rounded-full py-5'
                   placeholder="What's on your mind...."
                   name='description'
-                  register={register("description", {
-                    required: "Write something about post",
-                  })}
                   error={errors.description ? errors.description.message : ""}
                 />
               </div>
@@ -99,7 +115,7 @@ const Home: React.FC = () => {
 
                 <div>
                   {posting ? (
-                    <Loading />
+                    <h3>Loading....</h3>
                   ) : (
                     <CustomButton
                       type='submit'
@@ -112,23 +128,24 @@ const Home: React.FC = () => {
             </form>
 
             {loading ? (
-              <Loading />
+              <h1>loading...</h1>
             ) : posts?.length > 0 ? (
               posts?.map((post) => (
-                <PostCard
-                  key={post?._id}
-                  post={post}
-                  user={user}
-                  deletePost={() => {}}
-                  likePost={() => {}}
-                />
+                // <PostCard
+                //   key={post?._id}
+                //   post={post}
+                //   user={user}
+                //   deletePost={() => {}}
+                //   likePost={() => {}}
+                // />
+                <h1>post</h1>
               ))
             ) : (
               <div className='flex w-full h-full items-center justify-center'>
                 <p className='text-lg text-ascent-2'>No Post Available</p>
               </div>
             )}
-          </div> */}
+          </div>
 
           {/* RIGJT */}
           <div className='hidden w-1/4 h-full lg:flex flex-col gap-8 overflow-y-auto'>
