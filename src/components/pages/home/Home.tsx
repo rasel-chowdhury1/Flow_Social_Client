@@ -1,6 +1,6 @@
 "use client"
 
-import { posts, user } from "@/components/assets/data";
+import { posts, requests, suggest, user } from "@/components/assets/data";
 import ProfileCard from "./ProfileCard";
 import FriendsCard from "./FriendsCard";
 import { useState } from "react";
@@ -8,23 +8,34 @@ import { NoProfile } from "@/components/assets";
 import TextInput from "@/components/ui/TextInput";
 import { useForm } from "react-hook-form";
 import { BiImages, BiSolidVideo } from "react-icons/bi";
-import { BsFiletypeGif } from "react-icons/bs";
+import { BsFiletypeGif, BsPersonFillAdd } from "react-icons/bs";
 import CustomButton from "@/components/ui/CustomButton";
-const {
-  register,
-  handleSubmit,
-  formState: { errors },
-} = useForm();
+import PostCard from "./PostCard";
+import Link from "next/link";
 
 
 const UserData = user;
 
 const Home: React.FC = () => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+  
   // const [suggestedFriends, setSuggestedFriends] = useState(suggest);
   const [errMsg, setErrMsg] = useState("");
-  const [file, setFile] = useState(null);
+  const [file, setFile] = useState<File | null>(null);
   const [posting, setPosting] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [friendRequest, setFriendRequest] = useState(requests);
+  const [suggestedFriends, setSuggestedFriends] = useState(suggest);
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setFile(e.target.files[0]);
+    }
+  };
+  
     return (
         <div className='w-full flex gap-2 lg:gap-4 pt-5 pb-10 h-full'>
           {/* LEFT */}
@@ -45,24 +56,26 @@ const Home: React.FC = () => {
                   className='w-14 h-14 rounded-full object-cover'
                 />
                 <TextInput
-                  styles='w-full rounded-full py-5'
-                  placeholder="What's on your mind...."
-                  name='description'
-                  error={errors.description ? errors.description.message : ""}
-                />
-              </div>
-              {errMsg?.message && (
-                <span
-                  role='alert'
-                  className={`text-sm ${
-                    errMsg?.status === "failed"
-                      ? "text-[#f64949fe]"
-                      : "text-[#2ba150fe]"
-                  } mt-0.5`}
-                >
-                  {errMsg?.message}
-                </span>
-              )}
+              type="text"
+              styles="w-full rounded-full py-5"
+              placeholder="What's on your mind...."
+              {...register("description", {
+                required: "Description is required",
+              })}
+            />
+          </div>
+          {errMsg && (
+            <span
+              role="alert"
+              className={`text-sm ${
+                errMsg.includes("successfully")
+                  ? "text-green-600"
+                  : "text-red-500"
+              } mt-0.5`}
+            >
+              {errMsg}
+            </span>
+          )}
 
               <div className='flex items-center justify-between py-4'>
                 <label
@@ -71,7 +84,7 @@ const Home: React.FC = () => {
                 >
                   <input
                     type='file'
-                    onChange={(e) => setFile(e.target.files[0])}
+                    onChange={handleFileUpload}
                     className='hidden'
                     id='imgUpload'
                     data-max-size='5120'
@@ -88,7 +101,7 @@ const Home: React.FC = () => {
                   <input
                     type='file'
                     data-max-size='5120'
-                    onChange={(e) => setFile(e.target.files[0])}
+                    onChange={handleFileUpload}
                     className='hidden'
                     id='videoUpload'
                     accept='.mp4, .wav'
@@ -104,7 +117,7 @@ const Home: React.FC = () => {
                   <input
                     type='file'
                     data-max-size='5120'
-                    onChange={(e) => setFile(e.target.files[0])}
+                    onChange={handleFileUpload}
                     className='hidden'
                     id='vgifUpload'
                     accept='.gif'
@@ -131,14 +144,13 @@ const Home: React.FC = () => {
               <h1>loading...</h1>
             ) : posts?.length > 0 ? (
               posts?.map((post) => (
-                // <PostCard
-                //   key={post?._id}
-                //   post={post}
-                //   user={user}
-                //   deletePost={() => {}}
-                //   likePost={() => {}}
-                // />
-                <h1>post</h1>
+                <PostCard
+                  key={post?._id}
+                  post={post}
+                  user={user}
+                  deletePost={() => {}}
+                  likePost={() => {}}
+                />
               ))
             ) : (
               <div className='flex w-full h-full items-center justify-center'>
@@ -150,7 +162,7 @@ const Home: React.FC = () => {
           {/* RIGJT */}
           <div className='hidden w-1/4 h-full lg:flex flex-col gap-8 overflow-y-auto'>
             {/* FRIEND REQUEST */}
-            {/* <div className='w-full bg-primary shadow-sm rounded-lg px-6 py-5'>
+            <div className='w-full bg-primary shadow-sm rounded-lg px-6 py-5'>
               <div className='flex items-center justify-between text-xl text-ascent-1 pb-2 border-b border-[#66666645]'>
                 <span> Friend Request</span>
                 <span>{friendRequest?.length}</span>
@@ -160,7 +172,7 @@ const Home: React.FC = () => {
                 {friendRequest?.map(({ _id, requestFrom: from }) => (
                   <div key={_id} className='flex items-center justify-between'>
                     <Link
-                      to={"/profile/" + from._id}
+                      href={"/profile/" + from._id}
                       className='w-full flex gap-4 items-center cursor-pointer'
                     >
                       <img
@@ -191,10 +203,10 @@ const Home: React.FC = () => {
                   </div>
                 ))}
               </div>
-            </div> */}
+            </div>
 
             {/* SUGGESTED FRIENDS */}
-            {/* <div className='w-full bg-primary shadow-sm rounded-lg px-5 py-5'>
+            <div className='w-full bg-primary shadow-sm rounded-lg px-5 py-5'>
               <div className='flex items-center justify-between text-lg text-ascent-1 border-b border-[#66666645]'>
                 <span>Friend Suggestion</span>
               </div>
@@ -205,7 +217,7 @@ const Home: React.FC = () => {
                     key={friend._id}
                   >
                     <Link
-                      to={"/profile/" + friend?._id}
+                      href={"/profile/" + friend?._id}
                       key={friend?._id}
                       className='w-full flex gap-4 items-center cursor-pointer'
                     >
@@ -235,7 +247,7 @@ const Home: React.FC = () => {
                   </div>
                 ))}
               </div>
-            </div> */}
+            </div>
           </div>
         </div>
     )
